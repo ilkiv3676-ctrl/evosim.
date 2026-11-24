@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>EvoSim</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; overscroll-behavior: none; }
+  canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; outline: none;
+           -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  #msg { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; color: #ddd; font: 18px sans-serif; }
+</style>
+</head>
+<body>
+<div id="msg">Loading...</div>
+<canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+<script>
+  var Module = {
+    canvas: document.getElementById('canvas'),
+    print: function (t) { console.log(t); },
+    onRuntimeInitialized: function () { document.getElementById('msg').style.display = 'none'; }
+  };
+  // чтобы браузер не масштабировал страницу двумя пальцами
+  document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+  document.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
+  // размер канваса = размер окна (с учётом плотности пикселей)
+  function fit() {
+    var c = document.getElementById('canvas'), r = window.devicePixelRatio || 1;
+    c.width = Math.floor(window.innerWidth * r); c.height = Math.floor(window.innerHeight * r);
+  }
+  window.addEventListener('resize', fit); window.addEventListener('orientationchange', fit); fit();
+</script>
+{{{ SCRIPT }}}
+</body>
+</html>
