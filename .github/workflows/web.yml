@@ -1,0 +1,38 @@
+name: web
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.64
+      - name: raylib for web
+        run: |
+          git clone --depth 1 --branch 5.5 https://github.com/raysan5/raylib.git /tmp/raylib
+          make -C /tmp/raylib/src PLATFORM=PLATFORM_WEB EMSDK_PATH="$EMSDK" -j4
+      - name: build
+        run: |
+          mkdir -p web_out
+          emcc -O2 -std=c++17 -DPLATFORM_WEB -I/tmp/raylib/src main.cpp /tmp/raylib/src/libraylib.a -o web_out/index.html --shell-file shell.html -sUSE_GLFW=3 -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=134217728 -sFORCE_FILESYSTEM=1
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web_out
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4
+        
